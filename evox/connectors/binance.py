@@ -199,8 +199,8 @@ class BinanceMiddleware(object):
                                              interval=str(interval),
                                              limit=int(limit))
         except BinanceAPIException as error:
-                print('Error fetching candlesticks.')
-                raise(error.message)
+            print('Error fetching candlesticks.')
+            raise(error.message)
         except BinanceRequestException as error:
             print('Error fetching candlesticks.')
             raise(error.message)
