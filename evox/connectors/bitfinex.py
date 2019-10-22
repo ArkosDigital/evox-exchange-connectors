@@ -2,8 +2,11 @@
 
 '''
     Official Repository
-    # HTTP: https://github.com/BitMEX/api-connectors/tree/master/official-http/python-swaggerpy
-    # Websockets: https://github.com/BitMEX/api-connectors/tree/master/official-ws/python
+    https://github.com/bitfinexcom/bitfinex-api-py
+
+    Official Documentation
+    # HTTP: https://github.com/bitfinexcom/bitfinex-api-py/blob/master/docs/rest_v2.md
+    # Websockets: https://github.com/bitfinexcom/bitfinex-api-py/blob/master/docs/ws_v2.md
 '''
 
 import bfxapi
