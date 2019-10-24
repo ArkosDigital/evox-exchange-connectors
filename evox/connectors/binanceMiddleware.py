@@ -23,6 +23,7 @@ class BinanceMiddleware(object):
         ------------
         key : str
             The public key from Binance API account
+        
         secret : str
             The secret key from Binance API account
     '''
@@ -30,7 +31,7 @@ class BinanceMiddleware(object):
     def __init__(self, key, secret):
         self._client = Client(api_key=key, api_secret=secret)
         self._websocketManager = BinanceSocketManager(self._client)
-        self._conn_key = None
+        self._conn_key = []
 
     @property
     def client(self):
@@ -42,6 +43,22 @@ class BinanceMiddleware(object):
 
     def msgHandler(self, msg):
         print(msg)
+
+    def startUserSocket(self, callback):
+        """
+            Inicia um socket do tipo userSocket para o cliente da classe
+        """
+        self._conn_key.append(self._websocketManager.start_user_socket(callback))
+        self._websocketManager.start()
+        print("Conectado com sucesso ao UserWebSocket.")
+
+    def closeSocketConn(self):
+        """
+            Finaliza o socket aberto do cliente da classe.
+        """
+        for conn_key in self._conn_key:
+            self._websocketManager.stop_socket(conn_key)
+        self._websocketManager.close()
 
     def createLimitOrder(self, symbol, side, quantity, price):
         '''
@@ -258,7 +275,7 @@ class BinanceMiddleware(object):
             Get current asset balance if have passed parameter or,
             if not, return each assets balances.
 
-            :param asset: required
+            :param asset: -
             :type asset: str
 
             :returns: list of dictionaries
@@ -444,6 +461,17 @@ class BinanceMiddleware(object):
 
 
 if __name__ == '__main__':
+    import time
+    start_time = time.time()
     my_client = BinanceMiddleware('', '')
-    klines = my_client.fetchOHLCV(market='BTCUSDT', interval='1', limit=100)
-    # print(len(klines))
+    symbols = ['BTCUSDT', 'BTCUSDC', 'USDCUSDR']
+    response = []
+    for symbol in symbols:
+        response.append(my_client.fetchTicker(symbol=symbol))
+        print("--- %s seconds ---" % (time.time() - start_time))
+    for market in response:
+        symbol = market['symbol']
+        lastPrice = market['lastPrice']
+        print(f'{symbol} => {lastPrice}')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
