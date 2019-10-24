@@ -35,9 +35,6 @@ class BinanceMiddleware(object):
     def client(self):
         return self._client
 
-    def msgHandler(self, msg):
-        print(msg)
-
     def createLimitOrder(self, symbol, side, quantity, price):
         '''
             Post a new order for spot account.
@@ -389,8 +386,8 @@ class BinanceMiddleware(object):
 
     def fetchOpenSellOrders(self, *args):
         '''
-            Fetch all sell buy orders on a symbol,
-            If the symbol is not sent, buy orders for all
+            Fetch all sell orders on a symbol,
+            If the symbol is not sent, sell orders for all
             symbols will be returned in an array.
 
             :param symbol: -
