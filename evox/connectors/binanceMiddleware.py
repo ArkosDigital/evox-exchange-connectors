@@ -11,7 +11,6 @@
 
 from binance.client import Client
 from binance.enums import *
-from binance.websockets import BinanceSocketManager
 from binance.exceptions import *
 
 
@@ -29,36 +28,15 @@ class BinanceMiddleware(object):
     '''
 
     def __init__(self, key, secret):
-        self._client = Client(api_key=key, api_secret=secret)
-        self._websocketManager = BinanceSocketManager(self._client)
-        self._conn_key = []
+        self._client = Client(api_key=key,
+                              api_secret=secret)
 
     @property
     def client(self):
         return self._client
 
-    @property
-    def socketManager(self):
-        return self._websocketManager
-
     def msgHandler(self, msg):
         print(msg)
-
-    def startUserSocket(self, callback):
-        """
-            Inicia um socket do tipo userSocket para o cliente da classe
-        """
-        self._conn_key.append(self._websocketManager.start_user_socket(callback))
-        self._websocketManager.start()
-        print("Conectado com sucesso ao UserWebSocket.")
-
-    def closeSocketConn(self):
-        """
-            Finaliza o socket aberto do cliente da classe.
-        """
-        for conn_key in self._conn_key:
-            self._websocketManager.stop_socket(conn_key)
-        self._websocketManager.close()
 
     def createLimitOrder(self, symbol, side, quantity, price):
         '''
