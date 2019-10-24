@@ -317,7 +317,7 @@ class BinanceMiddleware(object):
             :param symbol: -
             :type symbol: str
 
-            :returns: dictionary with API response
+            :returns: list of dictionaries with API response
 
             API Response Example
             --------
@@ -368,7 +368,7 @@ class BinanceMiddleware(object):
             :param symbol: -
             :type symbol: str
 
-            :returns: dictionary with API response
+            :returns: list of dictionaries with API response
 
             API Response Example
             --------
@@ -418,7 +418,7 @@ class BinanceMiddleware(object):
             :param symbol: -
             :type symbol: str
 
-            :returns: dictionary with API response
+            :returns: list of dictionaries with API response
 
             API Response Example
             --------
