@@ -7,7 +7,6 @@
 '''
 
 import bitmex
-from bitmex_websocket import BitMEXWebsocket
 
 import json
 
