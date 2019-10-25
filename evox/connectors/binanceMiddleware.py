@@ -22,7 +22,7 @@ class BinanceMiddleware(object):
         ------------
         key : str
             The public key from Binance API account
-        
+
         secret : str
             The secret key from Binance API account
     '''

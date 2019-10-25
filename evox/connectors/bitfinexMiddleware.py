@@ -22,6 +22,7 @@ from bfxapi.rest.bfx_rest import BfxRest
 class BitfinexException(Exception):
     pass
 
+
 class BitfinexMiddleware(object):
     '''
         Bitfinex exchange management class
@@ -34,6 +35,7 @@ class BitfinexMiddleware(object):
         secret : str
             The secret key from Bitfinex API account
     '''
+
     def __init__(self, *args, **params):
         # self._client = BfxRest(API_KEY=params.get('api_key', None),
         #                        API_SECRET=params.get('api_secret', None))
@@ -43,7 +45,7 @@ class BitfinexMiddleware(object):
     @property
     def client(self):
         return self._client
-    
+
     async def fetchOHLCV(self, market, interval='1D', limit=100, section='hist'):
         '''
             Available values: '1m', '5m', '15m', '30m', '1h', '3h', '6h', '12h', '1D', '7D', '14D', '1M
@@ -94,6 +96,7 @@ class BitfinexMiddleware(object):
         except:
             pass
 
+
 if __name__ == '__main__':
     my_client = BitfinexMiddleware()
 
@@ -102,6 +105,6 @@ if __name__ == '__main__':
         print(type(candles))
         # print(len(candles))
         print(candles)
-    
+
     t = asyncio.ensure_future(run())
     asyncio.get_event_loop().run_until_complete(t)

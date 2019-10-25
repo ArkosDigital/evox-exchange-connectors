@@ -158,7 +158,7 @@ class BitmexMiddleware(object):
             else:
                 print('Interval not implemented.')
                 return []
-            
+
             candles = self.client.Trade.Trade_getBucketed(binSize=str(interval),
                                                           symbol=str(market),
                                                           count=int(limit),
