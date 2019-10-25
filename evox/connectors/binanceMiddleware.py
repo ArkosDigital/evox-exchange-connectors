@@ -22,7 +22,7 @@ class BinanceMiddleware(object):
         ------------
         key : str
             The public key from Binance API account
-        
+
         secret : str
             The secret key from Binance API account
     '''
@@ -129,11 +129,12 @@ class BinanceMiddleware(object):
             print(error.message)
             raise BaseException(f'Error creating margin order ({side}).')
 
-    def fetchOHLCV(self, market, interval, limit=500):
+    def fetchOHLCV(self, market, interval='1d', limit=500):
         '''
             Kline/candlestick bars for a symbol.
             Klines are uniquely identified by their open time.
             OHLC means open, high, close and volume.
+            1 day interval is default.
 
             :param symbol: required
             :type symbol: str
