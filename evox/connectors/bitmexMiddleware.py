@@ -29,10 +29,16 @@ class BitmexMiddleware(object):
     '''
     ORDER_TYPE_LIMIT = 'Limit'
     ORDER_TYPE_MARKET = 'Market'
+
     SIDE_BUY = 'Buy'
     SIDE_SELL = 'Sell'
 
-    def __init__(self, **params):
+    KLINE_INTERVAL_1MINUTE = '1m'
+    KLINE_INTERVAL_5MINUTE = '5m'
+    KLINE_INTERVAL_1HOUR = '1h'
+    KLINE_INTERVAL_1DAY = '1d'
+
+    def __init__(self, *args, **params):
         self._client = bitmex.bitmex(test=params.get('test', False),
                                      api_key=params.get('api_key', None),
                                      api_secret=params.get('api_secret', None),
@@ -100,11 +106,83 @@ class BitmexMiddleware(object):
             print(f'Error creating market order ({side}).')
             raise BitmexException(error)
 
-    def fetchTicker(self):
+    def fetchOHLCV(self, market, interval='1d', limit=100, reverse=True):
+        '''
+            Kline/candlestick bars for a symbol.
+            Klines are uniquely identified by their open time.
+            OHLC means open, high, close and volume.
+            1 day interval is default.
+            Available options: [1m,5m,1h,1d].
+
+            :param symbol: required
+            :type symbol: str
+            :param interval: -
+            :type interval: str
+            :param limit: - Default 100; max 1000.
+            :type limit: int
+            :param reverse: - Default True.
+            :type reverse: boolean
+
+            :returns: list of dictonaries or [] if not found
+
+            API Response Example
+            --------
+            [
+                {
+                    "timestamp": "2019-10-24T20:44:08.362Z",
+                    "symbol": "string",
+                    "open": 0,
+                    "high": 0,
+                    "low": 0,
+                    "close": 0,
+                    "trades": 0,
+                    "volume": 0,
+                    "vwap": 0,
+                    "lastSize": 0,
+                    "turnover": 0,
+                    "homeNotional": 0,
+                    "foreignNotional": 0
+                }
+            ]
+        '''
         try:
-            return self.client.Quote.Quote_get(symbol='XBT')
-        except:
-            pass
+            interval = str(interval)
+            if interval == '1m':
+                interval = self.KLINE_INTERVAL_1MINUTE
+            elif interval == '5m':
+                interval = self.KLINE_INTERVAL_5MINUTE
+            elif interval == '1h':
+                interval = self.KLINE_INTERVAL_1HOUR
+            elif interval == '1d':
+                interval = self.KLINE_INTERVAL_1DAY
+            else:
+                print('Interval not implemented.')
+                return []
+            
+            candles = self.client.Trade.Trade_getBucketed(binSize=str(interval),
+                                                          symbol=str(market),
+                                                          count=int(limit),
+                                                          reverse=bool(reverse))
+
+            return candles.result()[0]
+
+        except Exception as error:
+            print('Error fetching candlesticks (OHLCV).')
+            raise BitmexException(error)
+
+    def fetchTicker(self, symbol):
+        '''
+            It just returns the last candle in timeframe
+            of 1 day like fetchOHCLV method.
+            Must be reviewed!
+            --------
+        '''
+        try:
+            # return self.client.Quote.Quote_get(symbol='XBT')
+            return self.fetchOHLCV(market=symbol, limit=1)
+        except Exception as error:
+            print('Error fetching ticker.')
+            raise BitmexException(error)
 
     def fetchBalance(self, currency='XBt'):
         '''
@@ -271,7 +349,8 @@ if __name__ == '__main__':
     #                                    quantity=1)
     # print(type(order))
     # print(order)
-    balance = my_client.fetchTicker()
+    # balance = my_client.fetchOHLCV(market='XBT', interval='1M', limit=1000)
+    balance = my_client.fetchTicker(symbol='XBT')
     print(type(balance))
-    # print(len(balance))
+    print(len(balance))
     print(balance)
