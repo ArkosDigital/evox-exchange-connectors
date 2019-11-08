@@ -35,10 +35,11 @@ class BinanceMiddleware(object):
     def client(self):
         return self._client
 
-    def createLimitOrder(self, symbol, side, quantity, price):
+    def createLimitOrder(self, symbol, side, quantity, price=None):
         '''
             Post a new order for spot account.
             The type is limit and the time in force is GTC (good till canceled) by default.
+            If price was not defined post a market order
 
             :param symbol: required
             :type symbol: str
@@ -58,45 +59,80 @@ class BinanceMiddleware(object):
             side = SIDE_BUY if side.lower() == 'buy' else SIDE_SELL
         except AttributeError:
             raise AttributeError('Error setting order side (buy or sell).')
+        
+        if price and price != 0 :
+            try:
+                order = self.client.create_order(symbol=str(symbol),
+                                                side=side,
+                                                type=orderType,
+                                                quantity=float(quantity),
+                                                price=str(price),
+                                                timeInForce=timeInForce)
+                return order['orderId']
 
-        try:
-            order = self.client.create_order(symbol=str(symbol),
-                                             side=side,
-                                             type=orderType,
-                                             quantity=float(quantity),
-                                             price=str(price),
-                                             timeInForce=timeInForce)
-            return order['orderId']
+            except BinanceRequestException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceAPIException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinAmountException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinPriceException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinTotalException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderUnknownSymbolException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderInactiveSymbolException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+        else:
+            try:
+                order = self.client.create_order(symbol=str(symbol),
+                                                side=side,
+                                                type=orderType,
+                                                quantity=float(quantity),
+                                                timeInForce=timeInForce)
+                return order['orderId']
 
-        except BinanceRequestException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceAPIException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderMinAmountException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderMinPriceException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderMinTotalException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderUnknownSymbolException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderInactiveSymbolException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
-        except BinanceOrderException as error:
-            print(f'Error creating limit order ({side}).')
-            raise BaseException(error.message)
+            except BinanceRequestException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceAPIException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinAmountException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinPriceException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderMinTotalException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderUnknownSymbolException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderInactiveSymbolException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
+            except BinanceOrderException as error:
+                print(f'Error creating limit order ({side}).')
+                raise BaseException(error.message)
 
-    def createMarginOrder(self, symbol, side, quantity, price):
+    def createMarginOrder(self, symbol, side, quantity, price=None):
         '''
             Post a new order for margin account.
             The type is limit and the time in force is GTC (good till canceled) by default.
+            If price was not defined post a market order
 
             :param symbol: required
             :type symbol: str
@@ -116,18 +152,29 @@ class BinanceMiddleware(object):
             side = SIDE_BUY if side.lower() == 'buy' else SIDE_SELL
         except AttributeError:
             raise BaseException('Error setting order side (buy or sell).')
-
-        try:
-            order = self.client.create_margin_order(symbol=str(symbol),
-                                                    side=side,
-                                                    type=orderType,
-                                                    quantity=float(quantity),
-                                                    price=str(price),
-                                                    timeInForce=timeInForce)
-            return order['orderId']
-        except BinanceAPIException as error:
-            print(error.message)
-            raise BaseException(f'Error creating margin order ({side}).')
+        if price and price != 0:
+            try:
+                order = self.client.create_margin_order(symbol=str(symbol),
+                                                        side=side,
+                                                        type=orderType,
+                                                        quantity=float(quantity),
+                                                        price=str(price),
+                                                        timeInForce=timeInForce)
+                return order['orderId']
+            except BinanceAPIException as error:
+                print(error.message)
+                raise BaseException(f'Error creating margin order ({side}).')
+        else:
+            try:
+                order = self.client.create_margin_order(symbol=str(symbol),
+                                                        side=side,
+                                                        type=orderType,
+                                                        quantity=float(quantity),
+                                                        timeInForce=timeInForce)
+                return order['orderId']
+            except BinanceAPIException as error:
+                print(error.message)
+                raise BaseException(f'Error creating margin order ({side}).')
 
     def fetchOHLCV(self, market, interval='1d', limit=500):
         '''
